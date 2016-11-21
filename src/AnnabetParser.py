@@ -160,10 +160,17 @@ class AnnabetParser(HTMLParser):
 			except IOError:
 				notRead_l += 1
                                 print "pb with : %s" % self.__url
-				#exit
-                odds_l.append(self.__odds[0])
-                odds_l.append(self.__odds[1])
-                odds_l.append(self.__odds[2])
+                                #exit
+                if self.__odds[2] != "0.0":
+                        odds_l.append(self.__odds[0])
+                        odds_l.append(self.__odds[1])
+                        odds_l.append(self.__odds[2])
+                else :
+                        self.__odds = ["0.0", "0.0", "0.0"]
+                        odds_l.append(self.__odds[0])
+                        odds_l.append(self.__odds[1])
+                        odds_l.append(self.__odds[2])
+
                 #a = raw_input("...")
 		return odds_l
 

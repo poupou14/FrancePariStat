@@ -1,6 +1,7 @@
 #!/usr/bin/python
 from HTMLParser import HTMLParser
 import FPDataFormat
+import time
 import AnnabetParser
 import os,string, sys
 import urllib
@@ -73,6 +74,10 @@ class FPCalendar():
                         dateFromName_l = ''.join((dateFromName_l, "%d" % self.__annee))
                 return dateFromName_l
 
+        def isEarlier(self, cmpDate_p):
+            maTotalDate_l = self.__annee * 10000 + self.__mois * 100 + self.__jour
+            cmpTotalDate_l = cmpDate_p.__annee * 10000 + cmpDate_p.__mois * 100 + cmpDate_p.__jour
+            return (maTotalDate_l < cmpTotalDate_l)
 
         def getDate(self):
                 if self.__jour < 10:
@@ -130,12 +135,14 @@ class FPParser():
                 notRead_l = True
                 self.__outPutFileName = "FPScan.xls"
                 self.__myDate = FPCalendar(jour_p, mois_p, annee_p)
+                ticks = time.localtime(time.time())
+                self.__today = FPCalendar(ticks.tm_mday, ticks.tm_mon, ticks.tm_year)
                 #print self.__myDate
 
 #		self.findRootPage()
 
                 #while (False) :
-                while (self.__pageNext) :
+                while (self.__pageNext and self.__myDate.isEarlier(self.__today)) :
                         myPronoParser = FPPronoParser()
                         myPronoParser.setDate(self.__myDate)
                         fpUrl_l = ''.join((self.__prePage, self.__myDate.getDate()))
@@ -202,7 +209,10 @@ class FPParser():
                                                         tmpOdds_l = (tmpOdds_l + 100)/100
                                                     elif tmpOdds_l < 0 :
                                                         tmpOdds_l = (-100)/tmpOdds_l + 1
-                                                    odds_l[i] = "%f" % tmpOdds_l
+                                                    odds_l[i] = "%3f" % tmpOdds_l
+                                            elif float(odds_l[0]) < 0 or float(odds_l[1]) < 0 or float(odds_l[2]) < 0:
+                                                odds_l = ["","",""]
+
 
                                         except ValueError:
                                             odds_l = ["","",""]
